@@ -1325,7 +1325,7 @@ namespace Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http
                 ThrowRequestRejected(RequestRejectionReason.TooManyHeaders);
             }
 
-            var valueString = value.GetAsciiStringWithoutValidation();
+            var valueString = value.GetAsciiStringWithUtf8Fallback();
 
             FrameRequestHeaders.Append(name, valueString);
         }

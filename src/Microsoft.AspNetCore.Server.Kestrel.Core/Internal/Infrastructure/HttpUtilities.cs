@@ -103,7 +103,7 @@ namespace Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Infrastructure
             return asciiString;
         }
 
-        public static unsafe string GetAsciiStringWithoutValidation(this Span<byte> span)
+        public static unsafe string GetAsciiStringWithUtf8Fallback(this Span<byte> span)
         {
             if (span.IsEmpty)
             {
@@ -115,7 +115,8 @@ namespace Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Infrastructure
             fixed (char* output = asciiString)
             fixed (byte* buffer = &span.DangerousGetPinnableReference())
             {
-                StringUtilities.TryGetAsciiString(buffer, output, span.Length);
+                if (!StringUtilities.TryGetAsciiString(buffer, output, span.Length))
+                    return Encoding.UTF8.GetString(buffer, span.Length);
             }
 
             return asciiString;
