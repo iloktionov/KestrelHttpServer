@@ -103,6 +103,24 @@ namespace Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Infrastructure
             return asciiString;
         }
 
+        public static unsafe string GetAsciiStringWithoutValidation(this Span<byte> span)
+        {
+            if (span.IsEmpty)
+            {
+                return string.Empty;
+            }
+
+            var asciiString = new string('\0', span.Length);
+
+            fixed (char* output = asciiString)
+            fixed (byte* buffer = &span.DangerousGetPinnableReference())
+            {
+                StringUtilities.TryGetAsciiString(buffer, output, span.Length);
+            }
+
+            return asciiString;
+        }
+
         public static string GetAsciiStringEscaped(this Span<byte> span, int maxChars)
         {
             var sb = new StringBuilder();

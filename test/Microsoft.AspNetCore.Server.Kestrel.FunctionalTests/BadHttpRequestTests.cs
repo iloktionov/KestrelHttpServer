@@ -47,18 +47,6 @@ namespace Microsoft.AspNetCore.Server.Kestrel.FunctionalTests
                 expectedExceptionMessage);
         }
 
-        [Theory]
-        [InlineData("Hea\0der: value", "Invalid characters in header name.")]
-        [InlineData("Header: va\0lue", "Malformed request: invalid headers.")]
-        [InlineData("Head\x80r: value", "Invalid characters in header name.")]
-        [InlineData("Header: valu\x80", "Malformed request: invalid headers.")]
-        public Task BadRequestWhenHeaderNameContainsNonASCIIOrNullCharacters(string header, string expectedExceptionMessage)
-        {
-            return TestBadRequest(
-                $"GET / HTTP/1.1\r\n{header}\r\n\r\n",
-                "400 Bad Request",
-                expectedExceptionMessage);
-        }
 
         [Theory]
         [InlineData("POST")]
