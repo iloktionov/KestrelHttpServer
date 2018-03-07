@@ -115,11 +115,21 @@ namespace Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Infrastructure
             fixed (char* output = asciiString)
             fixed (byte* buffer = &span.DangerousGetPinnableReference())
             {
-                if (!StringUtilities.TryGetAsciiString(buffer, output, span.Length))
-                    return Encoding.UTF8.GetString(buffer, span.Length);
-            }
+                if (StringUtilities.TryGetAsciiString(buffer, output, span.Length))
+                    return asciiString;
 
-            return asciiString;
+                if (asciiString.Contains("\0"))
+                    throw new InvalidOperationException();
+
+                try
+                {
+                    return Encoding.UTF8.GetString(buffer, span.Length);
+                }
+                catch
+                {
+                    throw new InvalidOperationException();
+                }
+            }
         }
 
         public static string GetAsciiStringEscaped(this Span<byte> span, int maxChars)

@@ -1177,7 +1177,7 @@ namespace Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http
             try
             {
                 // Read raw target before mutating memory.
-                rawTarget = target.GetAsciiStringNonNullCharacters();
+                rawTarget = target.GetAsciiStringWithUtf8Fallback();
 
                 if (pathEncoded)
                 {
@@ -1211,7 +1211,7 @@ namespace Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http
                     }
                     else
                     {
-                        requestUrlPath = path.Slice(0, pathLength).GetAsciiStringNonNullCharacters();
+                        requestUrlPath = path.Slice(0, pathLength).GetAsciiStringWithUtf8Fallback();
                     }
                 }
             }
@@ -1220,7 +1220,7 @@ namespace Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http
                 ThrowRequestTargetRejected(target);
             }
 
-            QueryString = query.GetAsciiStringNonNullCharacters();
+            QueryString = query.GetAsciiStringWithUtf8Fallback();
             RawTarget = rawTarget;
             Path = requestUrlPath;
         }
@@ -1256,7 +1256,7 @@ namespace Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http
             //
             // Allowed characters in the 'host + port' section of authority.
             // See https://tools.ietf.org/html/rfc3986#section-3.2
-            RawTarget = target.GetAsciiStringNonNullCharacters();
+            RawTarget = target.GetAsciiStringWithUtf8Fallback();
             Path = string.Empty;
             QueryString = string.Empty;
         }
@@ -1290,7 +1290,7 @@ namespace Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http
             //    a server MUST accept the absolute-form in requests, even though
             //    HTTP/1.1 clients will only send them in requests to proxies.
 
-            RawTarget = target.GetAsciiStringNonNullCharacters();
+            RawTarget = target.GetAsciiStringWithUtf8Fallback();
 
             // Validation of absolute URIs is slow, but clients
             // should not be sending this form anyways, so perf optimization
@@ -1304,7 +1304,7 @@ namespace Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http
             _absoluteRequestTarget = uri;
             Path = uri.LocalPath;
             // don't use uri.Query because we need the unescaped version
-            QueryString = query.GetAsciiStringNonNullCharacters();
+            QueryString = query.GetAsciiStringWithUtf8Fallback();
         }
 
         private unsafe static string GetUtf8String(Span<byte> path)
