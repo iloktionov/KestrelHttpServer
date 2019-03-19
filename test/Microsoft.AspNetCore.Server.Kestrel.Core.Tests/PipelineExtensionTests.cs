@@ -101,24 +101,6 @@ namespace Microsoft.AspNetCore.Server.Kestrel.Core.Tests
             }
         }
 
-        [Theory]
-        // non-ascii characters stored in 32 bits
-        [InlineData("𤭢𐐝")]
-        // non-ascii characters stored in 16 bits
-        [InlineData("ñ٢⛄⛵")]
-        public void WriteAsciiNoValidationWritesOnlyOneBytePerChar(string input)
-        {
-            // WriteAscii doesn't validate if characters are in the ASCII range
-            // but it shouldn't produce more than one byte per character
-            var writerBuffer = _pipe.Writer.Alloc();
-            var writer = new WritableBufferWriter(writerBuffer);
-            PipelineExtensions.WriteAsciiNoValidation(ref writer, input);
-            writerBuffer.FlushAsync().GetAwaiter().GetResult();
-            var reader = _pipe.Reader.ReadAsync().GetAwaiter().GetResult();
-
-            Assert.Equal(input.Length, reader.Buffer.Length);
-        }
-
         [Fact]
         public void WriteAsciiNoValidation()
         {
