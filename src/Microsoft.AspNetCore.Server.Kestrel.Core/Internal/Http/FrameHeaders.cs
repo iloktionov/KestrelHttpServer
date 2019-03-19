@@ -234,16 +234,6 @@ namespace Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http
             return TryGetValueFast(key, out value);
         }
 
-        public static void ValidateHeaderCharacters(StringValues headerValues)
-        {
-            var count = headerValues.Count;
-            for (var i = 0; i < count; i++)
-
-            {
-                ValidateHeaderCharacters(headerValues[i]);
-            }
-        }
-
         public static void ValidateHeaderCharacters(string headerCharacters)
         {
             if (headerCharacters != null)

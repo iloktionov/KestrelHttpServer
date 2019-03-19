@@ -4,6 +4,7 @@
 using System;
 using System.Buffers;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Server.Kestrel.Internal.System;
 using Microsoft.AspNetCore.Server.Kestrel.Internal.System.Buffers;
@@ -38,10 +39,25 @@ namespace Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http
             return result;
         }
 
+        private static bool IsAscii(string value)
+        {
+            foreach (var ch in value)
+                if (ch < 0x20 || ch > 0x7E)
+                    return false;
+
+            return true;
+        }
+
         public unsafe static void WriteAsciiNoValidation(ref WritableBufferWriter buffer, string data)
         {
             if (string.IsNullOrEmpty(data))
             {
+                return;
+            }
+
+            if (!IsAscii(data))
+            {
+                buffer.Write(Encoding.UTF8.GetBytes(data));
                 return;
             }
 
